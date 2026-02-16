@@ -22,7 +22,7 @@ export async function getDashboardData() {
     }
 
     const [user, activeRegularCampaign, activeFlexibleCampaign, savingsHistory, joinedGroups, walletData] = await Promise.all([
-      UserModel.findById(userId).select('name email walletBalance').lean(),
+      UserModel.findById(userId).select('name email walletBalance taxVault healthScore').lean(),
       IndividualSavingModel.findOne({ userId, isActive: true }).lean(),
       FlexibleSavingModel.findOne({ userId, isActive: true }).lean(),
       IndividualSavingModel.find({ userId, isActive: false }).sort({ endDate: -1 }).lean(),

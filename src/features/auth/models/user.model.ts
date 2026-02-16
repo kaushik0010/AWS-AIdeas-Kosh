@@ -8,6 +8,8 @@ export interface User extends Document {
     verificationTokenExpiry: Date;
     isEmailVerified: boolean;
     walletBalance: number;
+    taxVault: number;
+    healthScore: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -42,7 +44,18 @@ const userSchema: Schema<User> = new Schema({
     walletBalance: {
         type: Number,
         default: 0,
-    } 
+    },
+    taxVault: {
+        type: Number,
+        default: 0,
+        min: [0, "Tax vault cannot be negative"]
+    },
+    healthScore: {
+        type: Number,
+        default: 100,
+        min: [0, "Health score cannot be negative"],
+        max: [100, "Health score cannot exceed 100"]
+    }
 }, 
     { timestamps: true }
 );

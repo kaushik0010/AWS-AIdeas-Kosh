@@ -8,6 +8,7 @@ import StartIndividualSavingButton from '@/src/components/dashboard/StartIndivid
 import JoinedGroups from '@/src/components/dashboard/JoinedGroups';
 import SavingsHistory from '@/src/components/dashboard/SavingsHistory';
 import DeleteAccountButton from '@/src/components/dashboard/DeleteAccountButton';
+import IncomeDepositButton from '@/src/components/dashboard/IncomeDepositButton';
 
 export const metadata = {
   title: "KOSH | Dashboard",
@@ -72,6 +73,7 @@ const Dashboard = async () => {
           </div>
 
           <div className="space-y-6">
+            <IncomeDepositButton />
             <StartIndividualSavingButton />
             <JoinedGroups initialGroups={serialize(joinedGroups)} />
             <SavingsHistory initialData={serialize(savingsHistory)} />

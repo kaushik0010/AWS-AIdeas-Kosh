@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
         const user = await UserModel.findOne({ 
             email: session?.user.email }
-        ).select("email name walletBalance");
+        ).select("email name walletBalance taxVault healthScore");
 
         if(!user) {
             return NextResponse.json({

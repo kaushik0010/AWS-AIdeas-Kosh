@@ -51,7 +51,7 @@ const DeleteAccountButton = () => {
         </DialogHeader>
         <DialogFooter className="gap-2 pt-4">
           <DialogClose asChild>
-            <Button variant="default" disabled={isLoading} className="flex-1">
+            <Button variant="default" disabled={isLoading} className="flex-1 cursor-pointer">
               Cancel
             </Button>
           </DialogClose>
@@ -59,7 +59,7 @@ const DeleteAccountButton = () => {
             variant="destructive"
             disabled={isLoading}
             onClick={handleDeleteAccount}
-            className="flex-1"
+            className="flex-1 cursor-pointer"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
