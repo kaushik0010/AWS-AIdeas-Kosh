@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, DollarSign, Loader2, Target, Zap } from "lucide-react"
+import { Calendar, IndianRupee, Loader2, Target, Zap } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -81,9 +81,9 @@ const RegularCampaignForm = () => {
                     name="amountPerMonth"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="flex items-center"><DollarSign className="h-4 w-4 mr-2" /> Monthly Amount</FormLabel>
+                            <FormLabel className="flex items-center"><IndianRupee className="h-4 w-4 mr-2" /> Monthly Amount</FormLabel>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
                                 <Input type="number" min="1" step="1" {...field} className="h-10 pl-8"
                                     onChange={(e) => field.onChange(Number(e.target.value))} />
                             </div>
@@ -118,10 +118,10 @@ const RegularCampaignForm = () => {
                 <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <h3 className="font-medium mb-2">Your Savings Plan</h3>
                     <p className="text-sm">
-                        Save <span className="font-semibold">${form.watch("amountPerMonth")}</span> monthly for <span className="font-semibold">{form.watch("duration")} months</span>
+                        Save <span className="font-semibold">₹{form.watch("amountPerMonth")}</span> monthly for <span className="font-semibold">{form.watch("duration")} months</span>
                     </p>
                     <p className="text-sm mt-1">
-                        Total goal: <span className="font-semibold">${form.watch("amountPerMonth") * form.watch("duration")}</span>
+                        Total goal: <span className="font-semibold">₹{form.watch("amountPerMonth") * form.watch("duration")}</span>
                     </p>
                 </div>
 
@@ -229,9 +229,9 @@ const FlexibleCampaignForm = () => {
                     name="amountPerContribution"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="flex items-center"><DollarSign className="h-4 w-4 mr-2" /> Amount per Contribution</FormLabel>
+                            <FormLabel className="flex items-center"><IndianRupee className="h-4 w-4 mr-2" /> Amount per Contribution</FormLabel>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
                                 <Input type="number" min="1" step="1" {...field} className="h-10 pl-8"
                                     onChange={(e) => field.onChange(Number(e.target.value))} />
                             </div>
@@ -263,10 +263,10 @@ const FlexibleCampaignForm = () => {
                 <div className="p-4 bg-blue-50 dark:bg-blue-800/20 rounded-lg">
                     <h3 className="font-medium mb-2">Your Flexible Plan</h3>
                     <p className="text-sm">
-                        Save <span className="font-semibold">${form.watch("amountPerContribution")}</span> {form.watch("frequency")} for <span className="font-semibold">{form.watch("duration")} {durationUnit}</span>
+                        Save <span className="font-semibold">₹{form.watch("amountPerContribution")}</span> {form.watch("frequency")} for <span className="font-semibold">{form.watch("duration")} {durationUnit}</span>
                     </p>
                     <p className="text-sm mt-1">
-                        Total goal: <span className="font-semibold">${form.watch("amountPerContribution") * form.watch("duration")}</span>
+                        Total goal: <span className="font-semibold">₹{form.watch("amountPerContribution") * form.watch("duration")}</span>
                     </p>
                 </div>
 

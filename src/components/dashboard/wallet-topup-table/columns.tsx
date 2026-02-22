@@ -14,7 +14,7 @@ export const walletTopUpColumns: ColumnDef<WalletTopUp>[] = [
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-            Top-up Amount ($)
+            Top-up Amount (₹)
             <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         )

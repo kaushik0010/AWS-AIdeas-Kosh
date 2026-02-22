@@ -9,6 +9,7 @@ import JoinedGroups from '@/src/components/dashboard/JoinedGroups';
 import SavingsHistory from '@/src/components/dashboard/SavingsHistory';
 import DeleteAccountButton from '@/src/components/dashboard/DeleteAccountButton';
 import IncomeDepositButton from '@/src/components/dashboard/IncomeDepositButton';
+import AICoachChat from '@/src/components/dashboard/AICoachChat';
 
 export const metadata = {
   title: "KOSH | Dashboard",
@@ -45,42 +46,47 @@ const Dashboard = async () => {
   const serialize = (data: any) => JSON.parse(JSON.stringify(data));
 
   return (
-    <div className="container mx-auto p-4 md:p-6 lg:p-8 space-y-6">
-      <div className="flex mx-auto justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Overview of your savings and account activity
-          </p>
+    <>
+      <div className="container mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+        <div className="flex mx-auto justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Overview of your savings and account activity
+            </p>
+          </div>
+          <DeleteAccountButton />
         </div>
-        <DeleteAccountButton />
-      </div>
 
-      <Suspense fallback={<DashboardSkeleton />}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <UserInfo user={serialize(user)} />
-              <WalletHistory
-                initialTopups={serialize(walletHistory.topups)}
-                initialTotalPages={walletHistory.totalPages}
+        <Suspense fallback={<DashboardSkeleton />}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <UserInfo user={serialize(user)} />
+                <WalletHistory
+                  initialTopups={serialize(walletHistory.topups)}
+                  initialTotalPages={walletHistory.totalPages}
+                />
+              </div>
+              <CurrentIndividualPlans 
+                initialRegularCampaign={serialize(activeRegularCampaign)} 
+                initialFlexibleCampaign={serialize(activeFlexibleCampaign)} 
               />
             </div>
-            <CurrentIndividualPlans 
-              initialRegularCampaign={serialize(activeRegularCampaign)} 
-              initialFlexibleCampaign={serialize(activeFlexibleCampaign)} 
-            />
-          </div>
 
-          <div className="space-y-6">
-            <IncomeDepositButton />
-            <StartIndividualSavingButton />
-            <JoinedGroups initialGroups={serialize(joinedGroups)} />
-            <SavingsHistory initialData={serialize(savingsHistory)} />
+            <div className="space-y-6">
+              <IncomeDepositButton />
+              <StartIndividualSavingButton />
+              <JoinedGroups initialGroups={serialize(joinedGroups)} />
+              <SavingsHistory initialData={serialize(savingsHistory)} />
+            </div>
           </div>
-        </div>
-      </Suspense>
-    </div>
+        </Suspense>
+      </div>
+      
+      {/* Floating AI Coach Chat */}
+      <AICoachChat />
+    </>
   )
 }
 

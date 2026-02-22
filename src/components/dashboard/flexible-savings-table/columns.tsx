@@ -18,9 +18,9 @@ export const flexibleColumns: ColumnDef<FlexibleCampaign>[] = [
         header: "Start Date",
         cell: ({ row }) => format(new Date(row.original.startDate), "dd MMM yyyy"), 
     },
-    { accessorKey: "amountPerContribution", header: "Amount ($)" },
-    { accessorKey: "totalAmount", header: "Total Target ($)" },
-    { accessorKey: "amountSaved", header: "Saved So Far ($)" },
+    { accessorKey: "amountPerContribution", header: "Amount (₹)" },
+    { accessorKey: "totalAmount", header: "Total Target (₹)" },
+    { accessorKey: "amountSaved", header: "Saved So Far (₹)" },
     { 
         accessorKey: "endDate", 
         header: "End Date",

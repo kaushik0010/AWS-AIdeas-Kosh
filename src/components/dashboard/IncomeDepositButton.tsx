@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { DollarSign, TrendingUp } from "lucide-react"
+import { IndianRupee, TrendingUp } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -47,7 +47,7 @@ const IncomeDepositButton = () => {
       }
 
       toast.success('Income processed successfully! 💰', {
-        description: `$${walletAmount.toFixed(2)} added to wallet, $${taxVaultAmount.toFixed(2)} secured for taxes`,
+        description: `₹${walletAmount.toFixed(2)} added to wallet, ₹${taxVaultAmount.toFixed(2)} secured for taxes`,
       })
 
       setOpen(false)
@@ -87,9 +87,9 @@ const IncomeDepositButton = () => {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="amount">Gross Income</Label>
+                  <Label htmlFor="amount">Gross Income (INR)</Label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="amount"
                       type="number"
@@ -99,7 +99,7 @@ const IncomeDepositButton = () => {
                       className="pl-9"
                       step="0.01"
                       min="0"
-                      max="100000"
+                      max="10000000"
                       required
                     />
                   </div>
@@ -111,13 +111,13 @@ const IncomeDepositButton = () => {
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">85% to Wallet</span>
                       <span className="font-semibold text-green-600">
-                        ${walletAmount.toFixed(2)}
+                        ₹{walletAmount.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">15% to Tax Vault</span>
                       <span className="font-semibold text-orange-600">
-                        ${taxVaultAmount.toFixed(2)}
+                        ₹{taxVaultAmount.toFixed(2)}
                       </span>
                     </div>
                   </div>

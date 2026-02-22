@@ -196,7 +196,7 @@ const CreateCampaignFormComponent = ({groupId}: GroupId) => {
                     <FormLabel className="text-gray-700 dark:text-gray-300">Monthly Amount</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-6 text-gray-500">$</span>
+                        <span className="absolute left-3 top-1/2 transform -translate-y-6 text-gray-500">₹</span>
                         <Input
                           type="number"
                           min="1"
@@ -222,11 +222,11 @@ const CreateCampaignFormComponent = ({groupId}: GroupId) => {
                   return (
                     <FormItem>
                       <FormLabel className="text-gray-700 dark:text-gray-300 text-sm">
-                        Penalty Amount (Max: ${maxPenalty.toFixed(2)})
+                        Penalty Amount (Max: ₹{maxPenalty.toFixed(2)})
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₹</span>
                           <Input
                             type="number"
                             min="0"

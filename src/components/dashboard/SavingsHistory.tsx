@@ -76,7 +76,7 @@ const SavingsHistory = ({ initialData }: { initialData: Campaign[] }) => {
                 </div>
                 <div className="flex justify-between space-x-4">
                   <div className="font-medium text-sm">
-                    ${campaign.amountSaved.toFixed(2)}
+                    ₹{campaign.amountSaved.toFixed(2)}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {formatDate(campaign.endDate)}

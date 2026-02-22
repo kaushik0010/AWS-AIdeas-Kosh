@@ -13,7 +13,7 @@ import { updateProfileSchema } from "../../schema/updateProfileSchema"
 import { ApiResponse } from "@/src/features/auth/types/apiResponse"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DollarSign, Loader2, Mail, User, Wallet } from "lucide-react"
+import { IndianRupee, Loader2, Mail, User, Wallet } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 
 type updateProfileValues = z.infer<typeof updateProfileSchema>
@@ -147,7 +147,7 @@ const UpdateProfileForm = () => {
                                     Current Balance
                                 </label>
                                 <div className="flex items-center h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
-                                    ${userData.walletBalance.toFixed(2)}
+                                    ₹{userData.walletBalance.toFixed(2)}
                                 </div>
                             </div>
 
@@ -158,11 +158,11 @@ const UpdateProfileForm = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel className="flex items-center">
-                                            <DollarSign className="h-4 w-4 mr-2" />
+                                            <IndianRupee className="h-4 w-4 mr-2" />
                                             Add Funds
                                         </FormLabel>
                                         <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
                                             <Input
                                                 type="number"
                                                 placeholder="0.00"

@@ -205,7 +205,7 @@ const CreateGroupComponent = () => {
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
                         <Input
                           type="number"
                           placeholder="No minimum requirement"

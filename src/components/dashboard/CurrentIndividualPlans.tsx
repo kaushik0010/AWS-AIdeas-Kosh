@@ -6,7 +6,7 @@ import { DataTable } from "./individual-savings-table/data-table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ApiResponse } from "@/src/features/auth/types/apiResponse";
-import { DollarSign, Loader2 } from "lucide-react";
+import { IndianRupee, Loader2 } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -131,10 +131,10 @@ const CurrentIndividualPlans = ({ initialRegularCampaign, initialFlexibleCampaig
                     <Progress value={progress} className="h-2" />
                     <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">
-                            Saved: ${campaign.amountSaved.toFixed(2)}
+                            Saved: ₹{campaign.amountSaved.toFixed(2)}
                         </span>
                         <span className="text-muted-foreground">
-                            Target: ${campaign.totalAmount.toFixed(2)}
+                            Target: ₹{campaign.totalAmount.toFixed(2)}
                         </span>
                     </div>
                 </div>
@@ -145,15 +145,15 @@ const CurrentIndividualPlans = ({ initialRegularCampaign, initialFlexibleCampaig
                     <Dialog open={payDialogOpen} onOpenChange={setPayDialogOpen}>
                         <DialogTrigger asChild>
                             <Button variant="default" className="w-full gap-2 cursor-pointer">
-                                <DollarSign className="h-4 w-4" />
-                                Pay Contribution (${amountToPay})
+                                <IndianRupee className="h-4 w-4" />
+                                Pay Contribution (₹{amountToPay})
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md bg-white">
                             <DialogHeader>
                                 <DialogTitle className="text-gray-900">Confirm Payment</DialogTitle>
                                 <DialogDescription className="text-gray-600">
-                                    You are about to add ${amountToPay} to your savings plan.
+                                    You are about to add ₹{amountToPay} to your savings plan.
                                 </DialogDescription>
                             </DialogHeader>
                             {/* ... Pay Dialog Content ... */}
@@ -182,8 +182,8 @@ const CurrentIndividualPlans = ({ initialRegularCampaign, initialFlexibleCampaig
                     <Dialog open={collectDialogOpen} onOpenChange={setCollectDialogOpen}>
                         <DialogTrigger asChild>
                             <Button variant="success" className="w-full gap-2 cursor-pointer" disabled={!isPlanEnded}>
-                                <DollarSign className="h-4 w-4" />
-                                Collect Savings (${campaign.amountSaved.toFixed(2)})
+                                <IndianRupee className="h-4 w-4" />
+                                Collect Savings (₹{campaign.amountSaved.toFixed(2)})
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md bg-white">
@@ -191,7 +191,7 @@ const CurrentIndividualPlans = ({ initialRegularCampaign, initialFlexibleCampaig
                                 <DialogTitle className="text-gray-900">Confirm Collection</DialogTitle>
                                 <DialogDescription className="text-gray-600">
                                 {isPlanEnded ? (
-                                    `Your total savings of $${campaign.amountSaved.toFixed(2)} will be credited to your account.`
+                                    `Your total savings of ₹${campaign.amountSaved.toFixed(2)} will be credited to your account.`
                                 ) : (
                                     `Your savings plan ends on ${format(new Date(campaign.endDate), 'PPP')}. You can only collect after the end date.`
                                 )}

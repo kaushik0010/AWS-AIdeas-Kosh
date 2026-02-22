@@ -4,9 +4,9 @@ import {format} from "date-fns"
 
 export const columns: ColumnDef<RegularCampaign>[] = [
   { accessorKey: "campaignName", header: "Campaign Name" },
-  { accessorKey: "amountPerMonth", header: "Monthly Amount ($)" },
-  { accessorKey: "totalAmount", header: "Total Target ($)" },
-  { accessorKey: "amountSaved", header: "Saved So Far ($)" },
+  { accessorKey: "amountPerMonth", header: "Monthly Amount (₹)" },
+  { accessorKey: "totalAmount", header: "Total Target (₹)" },
+  { accessorKey: "amountSaved", header: "Saved So Far (₹)" },
   { 
     accessorKey: "startDate", 
     header: "Start Date",

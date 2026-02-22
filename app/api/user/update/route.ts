@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import UserModel from "@/src/features/auth/models/user.model";
 import { NextResponse } from "next/server";
-import WalletTopUpModel from "@/src/features/savings/individual/models/walletTopUp.model";
+import { processIncomeDeposit } from "@/src/features/tax/services/taxTrapAgent.service";
 
 export async function PATCH(request: Request) {
     await dbConnect();
@@ -30,41 +30,52 @@ export async function PATCH(request: Request) {
             }, {status: 404});
         }
 
-        if(name) user.name = name;
+        // Handle name update independently
+        if(name) {
+            user.name = name;
+            await user.save();
+        }
 
-        if(walletTopUpAmount) {
-            if(walletTopUp && walletTopUp>0) {
-                const newBalance = user.walletBalance + walletTopUpAmount;
+        // Handle wallet top-up through Tax Trap Agent
+        if(walletTopUpAmount > 0) {
+            const result = await processIncomeDeposit(
+                (user._id as any).toString(),
+                walletTopUpAmount
+            );
 
-                if(newBalance > 10000) {
-                    return NextResponse.json({
-                        success: false,
-                        message: "Wallet limit exceeded ($10,000)"
-                    }, { status: 400 })
-                }
-
-                user.walletBalance = newBalance;
-
-                await WalletTopUpModel.create({
-                    userId: user._id,
-                    amount: walletTopUpAmount,
-                    status: "success",
-                    date: new Date(),
-                });
+            if (!result.success) {
+                return NextResponse.json({
+                    success: false,
+                    message: result.error || "Failed to process income"
+                }, { status: 400 });
             }
+
+            // Refresh user data to get updated balances
+            const updatedUser = await UserModel.findById(user._id as any);
+            
+            return NextResponse.json({
+                success: true,
+                message: "User updated successfully",
+                user: {
+                    name: updatedUser?.name,
+                    email: updatedUser?.email,
+                    walletBalance: updatedUser?.walletBalance,
+                    taxVault: updatedUser?.taxVault,
+                },
+            });
         }
         
-        await user.save();
-
+        // If only name was updated
         return NextResponse.json({
             success: true,
-            messasge: "User updated successfully",
+            message: "User updated successfully",
             user: {
                 name: user.name,
                 email: user.email,
                 walletBalance: user.walletBalance,
+                taxVault: user.taxVault,
             },
-        })
+        });
 
     } catch (error) {
         console.error("Update error:", error);

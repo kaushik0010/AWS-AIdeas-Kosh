@@ -14,8 +14,8 @@ import {
   ChevronUpIcon,
   InfoIcon,
   PlusIcon,
-  DollarSign,
-  Loader2
+  Loader2,
+  IndianRupee
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import axios, { AxiosError } from "axios";
@@ -319,7 +319,7 @@ const GroupMainSectionComponent = ({ data }: { data: GroupPageData }) => {
                     <WalletIcon className="h-4 w-4 text-gray-500" />
                     <span className="text-sm text-gray-500">Penalty:</span>
                     <span className="font-medium">
-                      ${expandedCampaignDetails.penaltyAmount?.toLocaleString() || '0'}
+                      ₹{expandedCampaignDetails.penaltyAmount?.toLocaleString() || '0'}
                     </span>
                   </div>
                 </div>
@@ -335,7 +335,7 @@ const GroupMainSectionComponent = ({ data }: { data: GroupPageData }) => {
                     <WalletIcon className="h-4 w-4 text-gray-500" />
                     <span className="text-sm text-gray-500">Monthly Amount:</span>
                     <span className="font-medium">
-                      ${expandedCampaignDetails.amountPerMonth?.toLocaleString() || '0'}
+                      ₹{expandedCampaignDetails.amountPerMonth?.toLocaleString() || '0'}
                     </span>
                   </div>
                   
@@ -343,7 +343,7 @@ const GroupMainSectionComponent = ({ data }: { data: GroupPageData }) => {
                     <WalletIcon className="h-4 w-4 text-gray-500" />
                     <span className="text-sm text-gray-500">Total Saved:</span>
                     <span className="font-medium">
-                      ${expandedCampaignDetails.totalSaved?.toLocaleString() || '0'}
+                      ₹{expandedCampaignDetails.totalSaved?.toLocaleString() || '0'}
                     </span>
                   </div>
                 </div>
@@ -357,14 +357,14 @@ const GroupMainSectionComponent = ({ data }: { data: GroupPageData }) => {
                       className="px-6 py-3 w-full cursor-pointer"
                       size="lg"
                     >
-                      <DollarSign className="mr-2 h-4 w-4" />
+                      <IndianRupee className="mr-2 h-4 w-4" />
                       Pay Monthly Amount
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="bg-white p-0">
                     <DialogTitle></DialogTitle>
                     <DialogDescription className="text-center text-sm">
-                      You are paying <strong>${totalAmount}</strong>, please continue
+                      You are paying <strong>₹{totalAmount}</strong>, please continue
                     </DialogDescription>
                     <DialogFooter>
                       <div className="p-4 mx-auto space-x-3">
@@ -399,14 +399,14 @@ const GroupMainSectionComponent = ({ data }: { data: GroupPageData }) => {
                         size="lg"
                         disabled={!isCampaignEnded}
                       >
-                        <DollarSign className="mr-2 h-4 w-4" />
+                        <IndianRupee className="mr-2 h-4 w-4" />
                         Distribute Savings
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-white p-0">
                       <DialogTitle></DialogTitle>
                       <DialogDescription className="text-center text-sm">
-                        You are distributing <strong>${expandedCampaignDetails.totalSaved}</strong> among {expandedCampaignDetails.participants.length} participants, please continue
+                        You are distributing <strong>₹{expandedCampaignDetails.totalSaved}</strong> among {expandedCampaignDetails.participants.length} participants, please continue
                       </DialogDescription>
                       <DialogFooter>
                         <div className="p-4 mx-auto space-x-3">

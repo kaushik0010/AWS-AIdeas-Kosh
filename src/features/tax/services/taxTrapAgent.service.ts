@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import UserModel from "../../auth/models/user.model";
 import IncomeTransactionModel from "../../savings/individual/models/incomeTransaction.model";
+import WalletTopUpModel from "../../savings/individual/models/walletTopUp.model";
 
 // Type definitions
 export interface TaxSplitResult {
@@ -61,10 +62,10 @@ export async function processIncomeDeposit(
             throw new Error("User not found");
         }
 
-        // Check wallet limit
+        // Check wallet limit (10 Lakhs INR)
         const newWalletBalance = user.walletBalance + netAmount;
-        if (newWalletBalance > 10000) {
-            throw new Error("Wallet limit exceeded ($10,000)");
+        if (newWalletBalance > 1000000) {
+            throw new Error("Wallet limit exceeded (₹10,00,000)");
         }
 
         // Update balances
@@ -78,6 +79,14 @@ export async function processIncomeDeposit(
             totalAmount: amount,
             taxAmount,
             netAmount,
+            status: "success",
+            date: new Date()
+        }], { session });
+
+        // Create wallet top-up record for history visibility
+        await WalletTopUpModel.create([{
+            userId: user._id,
+            amount: netAmount, // Record the net amount (85%) that went to wallet
             status: "success",
             date: new Date()
         }], { session });
