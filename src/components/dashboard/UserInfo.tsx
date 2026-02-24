@@ -2,11 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit, Lock, Mail, User, Wallet } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Activity, Edit, HelpCircle, Lock, Mail, User, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const UserInfo = ({user}: {user: any}) => {
   const router = useRouter();
+
+  // Determine health score color
+  const healthScore = user.healthScore || 100;
+  const getHealthScoreColor = (score: number) => {
+    if (score >= 80) return 'text-emerald-500 border-emerald-500 bg-emerald-50';
+    if (score >= 50) return 'text-amber-500 border-amber-500 bg-amber-50';
+    return 'text-red-500 border-red-500 bg-red-50';
+  };
 
   if (!user) return (
     <Card>
@@ -55,6 +64,31 @@ const UserInfo = ({user}: {user: any}) => {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-muted-foreground">Tax Vault (Locked)</p>
               <p className="font-semibold text-orange-600">₹{user.taxVault?.toFixed(2) || '0.00'}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-2">
+            <Activity className="w-5 h-5 flex-shrink-0" />
+            <div className="min-w-0 flex-1 flex items-center gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-medium text-muted-foreground">Health Score</p>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs max-w-[200px]">
+                          Your score tracks saving consistency and spending habits
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border mt-1 ${getHealthScoreColor(healthScore)}`}>
+                  <span className="font-semibold text-sm">{healthScore}/100</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

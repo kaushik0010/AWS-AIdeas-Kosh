@@ -24,12 +24,28 @@ interface Participants {
 }
 
 interface CampaignDetails {
+  startDate: string;
   endDate: Date;
+  durationInMonths: number;
   savingsDay: number;
   participants: Participants[];
   amountPerMonth: number;
   penaltyAmount: number;
   totalSaved: number;
+  contributions?: {
+    _id: string;
+    userId: string;
+    campaignId: string;
+    groupId: string;
+    month: number;
+    year: number;
+    scheduledDate: Date;
+    amountPaid: number;
+    isLate: boolean;
+    penaltyApplied: number;
+    paidOn: Date;
+    status: "pending" | "paid" | "failed";
+  }[];
 }
 
 interface GroupDetails {

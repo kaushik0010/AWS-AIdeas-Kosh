@@ -2,6 +2,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import dbConnect from "@/src/features/auth/lib/dbConnect";
 import UserModel from "@/src/features/auth/models/user.model";
 import GroupCampaignModel from "@/src/features/savings/groups/models/groupCampaign.model";
+import ContributionModel from "@/src/features/savings/groups/models/contribution.model";
 import { isValidObjectId } from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -50,10 +51,18 @@ export async function GET(
             }, {status: 404});
         }
 
+        // Fetch all contributions for this campaign
+        const contributions = await ContributionModel.find({ 
+            campaignId 
+        }).lean();
+
         return NextResponse.json({
             success: true,
             message: "Campaign details fetched successfully",
-            campaignDetails: campaign
+            campaignDetails: {
+                ...campaign.toObject(),
+                contributions
+            }
         }, {status: 200});
 
     } catch (error) {

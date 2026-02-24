@@ -7,11 +7,15 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import { Bot, Send, User, Loader2, Paperclip, MessageCircle } from "lucide-react"
+import { Bot, Send, User, Loader2, Paperclip, MessageCircle, X } from "lucide-react"
 import { useRef, useEffect, useState } from "react"
 
 const AICoachChat = () => {
   const [inputValue, setInputValue] = useState('')
+  const [attachment, setAttachment] = useState<string | null>(null)
+  const [attachmentName, setAttachmentName] = useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -33,10 +37,73 @@ const AICoachChat = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!inputValue.trim() || status !== 'ready') return
+    if ((!inputValue.trim() && !attachment) || status !== 'ready') return
 
-    await sendMessage({ text: inputValue })
+    const messagePayload: any = { text: inputValue || 'Please analyze this receipt.' }
+    
+    if (attachment) {
+      messagePayload.experimental_attachments = [{
+        url: attachment,
+        contentType: 'image/png',
+        name: attachmentName || 'receipt.png'
+      }]
+    }
+
+    await sendMessage(messagePayload)
     setInputValue('')
+    setAttachment(null)
+    setAttachmentName(null)
+    
+    // Cleanup preview URL
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+      setPreviewUrl(null)
+    }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file')
+      return
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be under 5MB')
+      return
+    }
+
+    // Create preview URL
+    setPreviewUrl(URL.createObjectURL(file))
+
+    // Convert to Base64
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const base64String = reader.result as string
+      setAttachment(base64String)
+      setAttachmentName(file.name)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handlePaperclipClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleRemoveAttachment = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
+    setAttachment(null)
+    setAttachmentName(null)
+    setPreviewUrl(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   return (
@@ -107,6 +174,16 @@ const AICoachChat = () => {
                             </p>
                           )
                         }
+                        if (part.type === 'file' && part.mediaType?.startsWith('image/')) {
+                          return (
+                            <img
+                              key={index}
+                              src={part.url}
+                              className="rounded-lg max-w-full h-auto my-2 shadow-sm border border-muted"
+                              alt="Receipt"
+                            />
+                          )
+                        }
                         return null
                       })}
                     </div>
@@ -134,7 +211,33 @@ const AICoachChat = () => {
             </ScrollArea>
             
             <form onSubmit={handleSubmit} className="p-3 border-t flex-shrink-0">
+              {previewUrl && (
+                <div className="mb-2 flex items-center gap-2 p-2 bg-muted rounded-md">
+                  <img 
+                    src={previewUrl} 
+                    alt="Preview" 
+                    className="w-10 h-10 rounded object-cover"
+                  />
+                  <span className="text-xs flex-1 truncate">{attachmentName}</span>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6"
+                    onClick={handleRemoveAttachment}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              )}
               <div className="flex gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
@@ -145,9 +248,10 @@ const AICoachChat = () => {
                 <Button 
                   type="button" 
                   size="icon" 
-                  variant="outline"
+                  variant="default"
                   disabled={status !== 'ready'}
-                  title="Upload receipt (coming soon)"
+                  onClick={handlePaperclipClick}
+                  title="Upload receipt"
                   className="flex-shrink-0"
                 >
                   <Paperclip className="w-4 h-4" />
@@ -155,14 +259,14 @@ const AICoachChat = () => {
                 <Button 
                   type="submit" 
                   size="icon" 
-                  disabled={status !== 'ready' || !inputValue.trim()}
+                  disabled={status !== 'ready' || (!inputValue.trim() && !attachment)}
                   className="flex-shrink-0"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
               <p className="text-[10px] text-muted-foreground mt-1.5">
-                Ask about tax vault, health score, or spending advice
+                Ask about tax vault, health score, or upload a receipt
               </p>
             </form>
           </CardContent>
