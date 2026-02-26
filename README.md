@@ -1,167 +1,485 @@
-# 💰 KOSH - Fintech Savings Platform
+# KOSH (कोश) - Agentic Financial Wellness Platform
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
-![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=for-the-badge&logo=node.js)
-![MongoDB](https://img.shields.io/badge/MongoDB-8-green?style=for-the-badge&logo=mongodb)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38B2AC?style=for-the-badge&logo=tailwind-css)
-![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)
+> **कोश** (Kosh) means "treasury" or "vault" in Sanskrit — a fitting name for a platform that helps Indian gig workers build financial resilience through intelligent automation and community savings.
 
-## 🎯 The Problem
+## 🎯 Project Vision
 
-Managing personal savings is hard, but managing *group savings* is even harder. Whether it's for a vacation, a shared goal, or a traditional savings circle (like a *susu* or *chit fund*), groups rely on messy spreadsheets, constant reminders, and social pressure. This process is prone to errors, missed payments, and a lack of transparency, often leading to failed goals and frustration.
+KOSH is an **Agentic AI FinTech platform** built for the **modern independent workforce**. While open to all, KOSH is specifically optimized for the unique challenges of **India’s 15 million+ gig workers and freelancers** who lack formal tax withholding and stable savings structures. Unlike traditional savings apps, KOSH acts as an autonomous financial guardian that:
 
-## 💡 The Solution: KOSH
+- **Automatically secures tax liabilities** before users can spend their income
+- **Provides context-aware financial coaching** using multimodal AI (text + vision)
+- **Enables community-based savings** inspired by traditional Indian chit-fund systems
+- **Gamifies financial health** through real-time scoring and behavioral nudges
 
-**KOSH** is a FinTech web application that digitizes and automates this entire process. It provides a secure, transparent, and motivating platform for both **individual** and **collaborative savings**.
+The platform transitions from passive financial tracking to an **autonomous financial ecosystem** where AI agents work proactively to protect users from common financial pitfalls.
 
-By enforcing rules, automating contributions, and applying penalties for missed payments, KOSH transforms a chaotic social process into a simple, disciplined financial tool, helping users build healthy financial habits and achieve their goals together.
+---
 
+## 🚀 Core Features
 
-## 🧠 Key Design Decisions
+### 1. Tax Trap Agent (Automated Tax Compliance)
 
-### 1. Contribution Windows + Penalties
-Instead of allowing payments anytime, I introduced fixed contribution windows.
-- Late payments incur penalties (capped at 40%)
-- Missed payments reduce final payout eligibility
+The Tax Trap Agent is an autonomous workflow that intercepts income deposits and enforces tax discipline.
 
-**Tradeoff:** More complex backend logic  
-**Reason:** Ensures fairness and prevents manipulation
+#### How It Works
 
-### 2. Admin-Controlled Group Lifecycle
-Admins control member approval, campaign start, and payout.
-**Tradeoff:** Centralized control  
-**Reason:** Mirrors real-world savings groups and avoids chaos
+**Trigger**: User deposits income via `/api/wallet/income`
 
-### 3. No Real Money Handling
-This version intentionally avoids real payments.
-**Reason:** Focus on system design and correctness before compliance & security complexity
+**Automatic Split Logic**:
+```typescript
+// 15% → Tax Vault (locked until April)
+// 85% → Wallet Balance (available immediately)
 
+const taxAmount = income * 0.15;
+const netAmount = income * 0.85;
+```
 
-## ✨ Key Features
+**April Guardrail**:
+- Tax Vault funds are **locked** for 11 months of the year
+- Withdrawal attempts return: `🔒 ACCESS DENIED. The Tax Agent has locked these funds until Tax Season.`
+- Funds unlock **only in April** (India's tax filing season)
 
-### 👥 Group Savings (The Core)
-* **Create & Join Groups:** Form public (auto-join) or private (admin approval) savings groups.
-* **Group Campaigns:** Set shared savings goals with start/end dates and contribution amounts.
-* **Contribution Tracking & Penalties** Tracks manual monthly contributions and automatically applies a penalty (up to 40%) for late/missed payments to enforce discipline.
-* **Admin-Triggered Payouts:** After the campaign ends, the admin distributes the funds with a single click, triggering an equal and automated payout to all members.
+**Technical Implementation**:
+- Uses **MongoDB atomic transactions** to ensure split consistency
+- Creates audit trail via `IncomeTransactionModel`
+- Enforces wallet limit of ₹10,00,000 (10 Lakhs INR)
 
-### 👤 Individual & Wallet System
-* **Individual Savings:** Create personal, private savings goals (with manual contributions) to track your own progress.
-* **Personal Wallet:** Securely manage your funds, top-up your balance, and track all transaction history.
-* **Secure Authentication:** Full login/register system with email verification (using NextAuth & JWT).
-* **User Profiles:** Update personal details and manage your account.
+**User Model Schema**:
+```typescript
+{
+  walletBalance: Number,  // 85% of income
+  taxVault: Number,       // 15% of income (locked)
+  healthScore: Number     // 0-100 gamification metric
+}
+```
 
-### 🛡️ Smart Rules & Platform
-* **Admin Controls:** Group admins manage members, approve requests, and oversee campaigns.
-* **Spam Prevention:** Limits group joining requests to prevent system abuse.
-* **Safe Deletion Logic:** Admins must distribute funds and delete their group *before* they can delete their own account, ensuring no one loses their money.
-* **Dashboard:** A central hub to view your wallet, active campaigns, and group progress. 
+---
 
+### 2. AI Financial Coach (Multimodal Nova Pro Integration)
 
+A context-aware AI assistant powered by **Amazon Bedrock Nova Pro** that provides personalized financial guidance.
 
-## 🛠️ Tech Stack
-- **Frontend:** Next.js 15, React 19, TailwindCSS, ShadCN UI, Axios
-- **Backend:** Next.js API Routes (Node.js, Express-like)
-- **Database:** MongoDB + Mongoose  
-- **Auth:** NextAuth (JWT-based authentication)  
-- **Deployment:** Vercel  
+#### Key Capabilities
 
+**Context Injection**:
+- Fetches user's `walletBalance`, `taxVault`, `healthScore`, and recent transaction history
+- Injects real-time financial data into system prompt for personalized advice
 
+**Multimodal Receipt Scanning (OCR)**:
+- Users upload receipt images via paperclip button
+- Nova Pro Vision API extracts merchant name, line items, and total amount
+- Categorizes expenses into **NEEDS** (groceries, medicine, utilities) vs **WANTS** (dining out, entertainment)
 
-## 📂 Project Structure
-    /app
-        /api → Next.js API Routes
-        /auth → Authentication pages
-        /dashboard → User dashboard pages
-        /groups → Group savings pages
-    /src
-        /features → Feature-based modules (auth, savings, profile)
-        /components → Reusable UI components
-    /components 
-        /ui -> Shadcn ui components
+**Anti-Hallucination Protocol**:
+```typescript
+// Strict vision rules to prevent AI from inventing data
+"CRITICAL: If an image is present, your ONLY source of truth is the PIXELS.
+DO NOT use generic items like 'Rice' or 'Milk' unless those EXACT words appear.
+If you cannot read the text, say: 'I can see the image but the text is too blurry.'"
+```
 
+**Plain Text Formatting**:
+- No Markdown bolding (`**`), italics (`_`), or headers (`#`)
+- Optimized for floating chat bubble UI
+- Responses limited to 150 words for mobile readability
 
-## ⚡ Getting Started
+**Health Score Logic**:
+- **Base Score**: 100
+- **Deductions**: -10 per late group contribution, -5 if wallet < ₹100
+- **Bonuses**: +10 for 3-month saving streak
+- **Color Coding**: 
+  - 🟢 Green (80-100): Healthy
+  - 🟡 Yellow (50-79): Warning
+  - 🔴 Red (<50): Critical
 
-### 1️⃣ Clone the Repository
+---
+
+### 3. Hybrid Savings System
+
+KOSH offers two savings modes tailored to different user needs.
+
+#### A. Personal Savings Plans
+
+**Regular Savings**:
+- Fixed monthly contributions
+- Goal-based (e.g., "Emergency Fund", "Vacation")
+- Automated reminders on savings day
+
+**Flexible Savings**:
+- Variable contribution amounts
+- Custom frequency (weekly, bi-weekly, monthly)
+- Ideal for irregular gig income
+
+#### B. Group Savings (Chit-Fund Style)
+
+Inspired by traditional Indian **chit funds** and **ROSCAs** (Rotating Savings and Credit Associations), KOSH enables community-based savings with modern governance.
+
+**Campaign Structure**:
+- **Admin** creates a campaign with:
+  - Monthly contribution amount (e.g., ₹5,000)
+  - Duration (e.g., 12 months)
+  - Savings day (e.g., 5th of each month)
+  - Penalty amount for late payments (e.g., ₹200)
+- **Members** join and commit to monthly contributions
+
+**Contribution Ledger** (Persistent Side-by-Side View):
+- Real-time tracking of all member payments
+- Monthly accordion breakdown showing:
+  - 🟢 **Paid**: ₹[amount] with timestamp
+  - 🔴 **Late**: Past savings day, penalty applied
+  - ⚪ **Pending**: Before savings day deadline
+
+**Automated Penalty System**:
+```typescript
+// Late payment calculation
+const isLate = currentDay > savingsDay;
+const totalAmount = baseAmount + (isLate ? penaltyAmount : 0);
+```
+
+**Penalty Redistribution Formula** (Group Success Model):
+```typescript
+// Penalties are redistributed equally among ALL participants
+// This incentivizes collective accountability and group cohesion
+const penaltyPool = contributions
+  .filter(c => c.isLate && c.status === 'paid')
+  .reduce((sum, c) => sum + c.penaltyApplied, 0);
+
+const totalParticipants = campaign.participants.length;
+const bonusPerMember = Math.floor(penaltyPool / totalParticipants);
+
+// Final payout = base contributions + equal bonus share
+for (const member of campaign.participants) {
+  member.payout = member.totalContributions + bonusPerMember;
+}
+```
+
+**Admin-Triggered Payout**:
+- Only **group admin** can trigger distribution
+- Requires campaign end date to have passed
+- Uses **MongoDB transactions** for atomic wallet updates
+- Records distribution details:
+  ```typescript
+  {
+    distributedAt: Date,
+    payoutPerUser: { [userId]: amount },
+    penaltyRedistributed: { [userId]: bonusAmount }
+  }
+  ```
+
+---
+
+## 🏗️ Technical Architecture
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 15 (App Router) |
+| **Language** | TypeScript |
+| **Database** | MongoDB with Mongoose ODM |
+| **Authentication** | NextAuth.js v4 |
+| **AI Services** | Amazon Bedrock (Nova Pro) |
+| **UI Components** | shadcn/ui (Radix UI) |
+| **Styling** | Tailwind CSS 4 |
+| **Validation** | Zod |
+| **Package Manager** | pnpm |
+
+### Key Architectural Decisions
+
+**1. Atomic MongoDB Transactions (Critical for Communal Money Handling)**
+
+KOSH handles communal money in group savings campaigns, making transaction atomicity essential for reliability and trust. All financial operations use MongoDB sessions to ensure consistency:
+
+```typescript
+const session = await mongoose.startSession();
+session.startTransaction();
+
+try {
+  // Update user balances
+  user.walletBalance += netAmount;
+  user.taxVault += taxAmount;
+  await user.save({ session });
+
+  // Create transaction record
+  await IncomeTransactionModel.create([{ ... }], { session });
+
+  await session.commitTransaction();
+} catch (error) {
+  await session.abortTransaction();
+  // All changes rolled back - no partial updates
+}
+```
+
+**Why This Matters**:
+- **Group Payouts**: When distributing ₹50,000 among 10 members, either all 10 wallets update successfully or none do
+- **Tax Splits**: Income deposits must update both `walletBalance` and `taxVault` atomically
+- **Contribution Records**: Payment processing creates contribution records and updates campaign totals in a single atomic operation
+- **Zero Data Corruption**: Network failures or server crashes cannot leave the system in an inconsistent state
+
+**2. Nova Pro Vision Protocol**
+- Model: `us.amazon.nova-pro-v1:0` (upgraded from Nova Lite for better OCR accuracy)
+- Strict anti-hallucination rules in system prompt
+- Pixel-level verification before categorizing expenses
+- Fallback message if text is unreadable
+
+**3. Next.js 15 App Router Patterns**
+- Server Components for data fetching
+- Server Actions for mutations
+- Route Handlers for API endpoints
+- Streaming responses for AI chat
+
+**4. Real-Time UI Updates**
+- Optimistic UI updates with `router.refresh()`
+- Toast notifications via Sonner
+- Loading states with Lucide icons
+
+---
+
+## 👥 User Roles & Permissions
+
+### Group Admin
+
+**Capabilities**:
+- ✅ Create new savings campaigns
+- ✅ Set contribution amounts and penalties
+- ✅ Approve/reject join requests (for private groups)
+- ✅ Trigger final payout distribution
+- ✅ View contribution ledger for all members
+- ✅ Update group settings (name, description, criteria)
+- ✅ Delete group (if no active campaign)
+
+**Restrictions**:
+- ❌ Cannot distribute funds before campaign end date
+- ❌ Cannot modify campaign parameters after creation
+- ❌ Cannot force members to pay (voluntary system)
+
+### Group Member
+
+**Capabilities**:
+- ✅ Join public groups (instant)
+- ✅ Request to join private groups (requires admin approval)
+- ✅ Pay monthly contributions
+- ✅ View own payment history
+- ✅ View contribution ledger for all members
+- ✅ Leave group (if no active campaign participation)
+
+**Restrictions**:
+- ❌ Cannot create campaigns (admin-only)
+- ❌ Cannot trigger payouts
+- ❌ Cannot modify group settings
+- ❌ Cannot view other members' wallet balances
+
+---
+
+## 📊 Business Logic Deep Dive
+
+### Penalty Redistribution Example (Group Success Model)
+
+**Scenario**: 5-member group, ₹5,000/month, ₹200 penalty, 6-month campaign
+
+**Month 1 Contributions**:
+| Member | Status | Amount Paid | Penalty |
+|--------|--------|-------------|---------|
+| Alice | On-time | ₹5,000 | ₹0 |
+| Bob | On-time | ₹5,000 | ₹0 |
+| Charlie | Late | ₹5,200 | ₹200 |
+| Diana | On-time | ₹5,000 | ₹0 |
+| Eve | Late | ₹5,200 | ₹200 |
+
+**Penalty Pool**: ₹200 + ₹200 = ₹400
+
+**Total Participants**: 5 members
+
+**Bonus Per Member**: ₹400 ÷ 5 = ₹80 (distributed equally to ALL members)
+
+**Final Payouts** (after 6 months):
+| Member | Base Contributions | Bonus | Final Payout |
+|--------|-------------------|-------|--------------|
+| Alice | ₹30,000 | ₹80 | ₹30,080 |
+| Bob | ₹30,000 | ₹80 | ₹30,080 |
+| Charlie | ₹30,000 | ₹80 | ₹30,080 |
+| Diana | ₹30,000 | ₹80 | ₹30,080 |
+| Eve | ₹30,000 | ₹80 | ₹30,080 |
+
+**Key Insight**: Penalties are **not deducted** from late payers' final payout. Instead, they're **redistributed equally among ALL participants** to foster collective accountability and group cohesion. This "Group Success" model ensures everyone benefits when the campaign completes, regardless of individual payment timing.
+
+---
+
+## 🛠️ Installation & Setup
+
+### Prerequisites
+
+- Node.js 18+ (LTS recommended)
+- pnpm 8+
+- MongoDB 6+ (local or Atlas)
+- AWS Account with Bedrock access
+
+### Step 1: Clone Repository
+
 ```bash
-git clone https://github.com/kaushik0010/KOSH.git
+git clone https://github.com/your-org/kosh.git
 cd kosh
 ```
-### 2️⃣ Install Dependencies
-```
+
+### Step 2: Install Dependencies
+
+```bash
 pnpm install
 ```
-### 3️⃣ Configure Environment Variables
 
-Create a .env.local file and add:
-```
-MONGODB_URI=your_mongodb_connection_string
-NEXTAUTH_SECRET=your_nextauth_secret
-RESEND_API_KEY=your_resend_api_key
+### Step 3: Environment Variables
+
+Create `.env.local` in the root directory:
+
+```bash
+# Database
+MONGODB_URI=mongodb://localhost:27017/kosh
+# or MongoDB Atlas:
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/kosh
+
+# NextAuth
+NEXTAUTH_SECRET=your-secret-key-here-generate-with-openssl
+
+# AWS Bedrock
+BEDROCK_API_KEY=your-aws-access-key-id
+AWS_REGION=us-east-1
+
+# Email (for verification codes)
+RESEND_API_KEY=your-resend-api-key
 ```
 
-### 4️⃣ Run Locally
+**Required Variables**:
+- `MONGODB_URI`: MongoDB connection string (local or Atlas)
+- `NEXTAUTH_SECRET`: Secret key for NextAuth session encryption
+- `BEDROCK_API_KEY`: AWS access key for Bedrock API
+- `AWS_REGION`: AWS region for Bedrock (default: us-east-1)
+- `RESEND_API_KEY`: Resend API key for email verification
+
+### Step 4: Generate NextAuth Secret
+
+```bash
+openssl rand -base64 32
 ```
+
+Copy the output to `NEXTAUTH_SECRET` in `.env.local`.
+
+### Step 5: Run Development Server
+
+```bash
 pnpm dev
 ```
-Visit http://localhost:3000
 
-### 5️⃣ Build for Production
-```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Step 6: Build for Production
+
+```bash
 pnpm build
 pnpm start
 ```
 
+---
 
-## 📸 Screenshots
+## 📁 Project Structure
 
-<details>
-<summary>Click to expand/collapse screenshots</summary>
+```
+kosh/
+├── app/                          # Next.js 15 App Router
+│   ├── (auth)/                   # Auth routes (login, register, verify)
+│   ├── (dashboard)/              # Dashboard routes
+│   ├── (groups)/                 # Group savings routes
+│   └── api/                      # API routes
+│       ├── ai/coach/             # AI Coach endpoint
+│       ├── wallet/income/        # Tax Trap Agent endpoint
+│       └── savings/group/        # Group savings endpoints
+├── src/
+│   ├── features/
+│   │   ├── auth/                 # User authentication
+│   │   │   └── models/user.model.ts
+│   │   ├── tax/                  # Tax Trap Agent
+│   │   │   ├── services/taxTrapAgent.service.ts
+│   │   │   └── middleware/taxVaultGuardrail.ts
+│   │   └── savings/
+│   │       ├── individual/       # Personal savings
+│   │       └── groups/           # Group savings
+│   │           ├── models/
+│   │           │   ├── groupCampaign.model.ts
+│   │           │   └── contribution.model.ts
+│   │           └── components/
+│   │               └── GroupMainSectionComponent.tsx
+│   └── components/
+│       ├── dashboard/
+│       │   ├── UserInfo.tsx      # Health Score display
+│       │   ├── IncomeDepositButton.tsx
+│       │   └── AICoachChat.tsx   # Floating chat bubble
+│       └── ui/                   # shadcn/ui components
+├── types/
+│   └── index.d.ts                # Global TypeScript types
+└── .kiro/
+    ├── requirements.md           # Product requirements
+    └── specs/                    # Feature specifications
+```
 
-### Home Page
-<img width="1920" alt="KOSH Home Page" src="https://github.com/user-attachments/assets/d5fbc74c-aecc-4aba-8b28-97a60bc2169e" />
+---
 
-### Register
-<img width="1920" alt="register" src="https://github.com/user-attachments/assets/e2bc70e8-b411-4801-aeb6-fd1ad4f86e21" />
+## 🔐 Security Considerations
 
-### Login
-<img width="1920" alt="login" src="https://github.com/user-attachments/assets/76d8bc41-8ccd-4aa4-b209-21d8a0ed89cf" />
+1. **Tax Vault Guardrail**: Server-side month validation prevents client-side bypass
+2. **MongoDB Transactions**: Ensures atomic updates across multiple collections
+3. **NextAuth Sessions**: Secure JWT-based authentication
+4. **Zod Validation**: Input sanitization on all API routes
+5. **Rate Limiting**: (Recommended) Add rate limiting middleware for production
 
-### Dashboard
-<img width="1920" alt="dashboard" src="https://github.com/user-attachments/assets/bc6486d3-dbf9-425e-b800-b8d3dbaa61ab" />
+---
 
-### Update Profile
-<img width="1920" alt="update-profile" src="https://github.com/user-attachments/assets/069b95e5-feec-43c0-b8c5-38f980feeaf7" />
+## 🚧 Roadmap
 
-### Individual Savings Plan Creation
-<img width="1920" alt="individual savings plan" src="https://github.com/user-attachments/assets/d1268165-f655-4a57-8412-93271bf297ef" />
+### Phase 1 (Current)
+- ✅ Tax Trap Agent with April lock
+- ✅ AI Financial Coach with Nova Pro
+- ✅ Group Savings with penalty redistribution
+- ✅ Health Score gamification
 
-### All Groups
-<img width="1920" alt="all groups" src="https://github.com/user-attachments/assets/708117f9-98ea-49e6-a98d-ebd7e00eb4df" />
+### Phase 2 (Planned)
+- 🔲 Community Trust Score algorithm
+- 🔲 Automated loan eligibility based on savings history
+- 🔲 Integration with UPI for instant payouts
+- 🔲 Mobile app (React Native)
 
-### Create Group
-<img width="1920" alt="create group" src="https://github.com/user-attachments/assets/aaaabdf7-b6c6-4eef-b76c-950af0c8038d" />
+### Phase 3 (Future)
+- 🔲 Micro-insurance products
+- 🔲 Investment recommendations
+- 🔲 Tax filing automation
+- 🔲 Multi-language support (Hindi, Tamil, Telugu)
 
-### Group Details
-<img width="1920" alt="group-details" src="https://github.com/user-attachments/assets/bbfc409f-22dd-499c-ab19-b3fd7ca864f0" />
-
-### Group Savings Campaign Creation
-<img width="1920" alt="create campaign" src="https://github.com/user-attachments/assets/7019218f-ce04-42fe-8ed1-815bd9a39243" />
-
-</details>
-
-
+---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome!
-Feel free to fork this repo and submit a pull request.
+We welcome contributions! Please follow these guidelines:
 
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
+---
 
-## ⭐ Support
+## 📄 License
 
-If you like this project, don’t forget to star ⭐ the repo!
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+---
+
+## 🙏 Acknowledgments
+
+- **Amazon Bedrock** for Nova Pro AI capabilities
+- **shadcn/ui** for beautiful, accessible components
+- **Vercel** for Next.js framework and deployment platform
+- **MongoDB** for flexible, scalable database
+- Indian gig workers who inspired this platform
+
+---
+
+**Built with ❤️ for India's gig economy**

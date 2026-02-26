@@ -52,7 +52,7 @@ const userSchema: Schema<User> = new Schema({
     },
     healthScore: {
         type: Number,
-        default: 100,
+        default: 50,
         min: [0, "Health score cannot be negative"],
         max: [100, "Health score cannot exceed 100"]
     }

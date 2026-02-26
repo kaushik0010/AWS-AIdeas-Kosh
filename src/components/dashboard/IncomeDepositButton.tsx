@@ -50,6 +50,9 @@ const IncomeDepositButton = () => {
         description: `₹${walletAmount.toFixed(2)} added to wallet, ₹${taxVaultAmount.toFixed(2)} secured for taxes`,
       })
 
+      // Dispatch custom event to trigger WalletHistory refresh
+      window.dispatchEvent(new Event('wallet-updated'))
+
       setOpen(false)
       setAmount('')
       router.refresh()

@@ -111,7 +111,7 @@ const AICoachChat = () => {
       <PopoverTrigger asChild>
         <Button
           size="icon"
-          className="fixed bottom-6 right-6 z-50 rounded-full w-14 h-14 shadow-lg"
+          className="fixed bottom-6 right-6 z-50 rounded-full w-14 h-14 shadow-lg cursor-pointer"
           title="Chat with KOSH Coach"
         >
           <MessageCircle className="w-6 h-6" />
@@ -252,7 +252,7 @@ const AICoachChat = () => {
                   disabled={status !== 'ready'}
                   onClick={handlePaperclipClick}
                   title="Upload receipt"
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 cursor-pointer"
                 >
                   <Paperclip className="w-4 h-4" />
                 </Button>
@@ -260,7 +260,7 @@ const AICoachChat = () => {
                   type="submit" 
                   size="icon" 
                   disabled={status !== 'ready' || (!inputValue.trim() && !attachment)}
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                 </Button>

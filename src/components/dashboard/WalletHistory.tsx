@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { walletTopUpColumns } from "./wallet-topup-table/columns"
 import axios from "axios";
 import { DataTable } from "./individual-savings-table/data-table";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const PAGE_LIMIT = 5;
@@ -18,18 +18,23 @@ const WalletHistory = ({ initialTopups, initialTotalPages }: WalletHistoryProps)
 
   const isInitialRender = useRef(true);
 
-  const fetchTopups = async (page=1) => {
+  const fetchTopups = useCallback(async (page=1) => {
     try {
       setLoading(true)
       const res = await axios.get(`/api/wallet/topups?page=${page}&limit=${PAGE_LIMIT}`);
       setTopups(res.data.topups || []);
       setTotalPages(res.data.totalPages);
+      setCurrentPage(page);
     } catch (error) {
       console.error("Failed to fetch wallet top-ups", error);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  const handleManualRefresh = () => {
+    fetchTopups(currentPage);
+  };
 
   useEffect(() => {
     if(isInitialRender.current) {
@@ -37,15 +42,39 @@ const WalletHistory = ({ initialTopups, initialTotalPages }: WalletHistoryProps)
       return;
     }
     fetchTopups(currentPage)
-  }, [currentPage]);
+  }, [currentPage, fetchTopups]);
+
+  // Auto-update listener for wallet-updated event
+  useEffect(() => {
+    const handleWalletUpdate = () => {
+      fetchTopups(1); // Reset to first page to show latest transaction
+    };
+
+    window.addEventListener('wallet-updated', handleWalletUpdate);
+
+    return () => {
+      window.removeEventListener('wallet-updated', handleWalletUpdate);
+    };
+  }, [fetchTopups]);
 
 
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg md:text-xl">
-          Wallet Top-Up History
-        </CardTitle>
+        <div className="flex items-center">
+          <CardTitle className="text-lg md:text-xl">
+            Wallet Top-Up History
+          </CardTitle>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 ml-auto cursor-pointer"
+            onClick={handleManualRefresh}
+            disabled={loading}
+          >
+            <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {topups.length === 0 ? (
